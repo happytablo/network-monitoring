@@ -37,6 +37,9 @@ namespace a_webapi.Migrations
                     b.Property<bool>("IsOnline")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime>("LastCheck")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -57,11 +60,17 @@ namespace a_webapi.Migrations
                     b.Property<int>("DeviceId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsOnline")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ResponseTimeMs")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

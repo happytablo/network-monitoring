@@ -12,8 +12,8 @@ using a_webapi.Data;
 namespace a_webapi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260623192603_AddDeviceHistory")]
-    partial class AddDeviceHistory
+    [Migration("20260810173840_updDeviceModel")]
+    partial class updDeviceModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,9 @@ namespace a_webapi.Migrations
                     b.Property<bool>("IsOnline")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime>("LastCheck")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -60,17 +63,23 @@ namespace a_webapi.Migrations
                     b.Property<int>("DeviceId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsOnline")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("ResponseTimeMs")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DeviceId");
 
-                    b.ToTable("DeviceStatusHistory");
+                    b.ToTable("DeviceStatusHistories");
                 });
 
             modelBuilder.Entity("a_webapi.Models.DeviceStatusHistory", b =>

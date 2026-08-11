@@ -1,3 +1,4 @@
+using a_webapi.BackgroundServices;
 using a_webapi.Data;
 using a_webapi.Services;
 using Microsoft.EntityFrameworkCore;
@@ -7,11 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql("Host = localhost;Port=5432;Database=networkmonitor;Username=postgres;Password=mojeheslo;"));
 
-builder.Services.AddScoped<DeviceService>(); 
+builder.Services.AddScoped<DeviceService>();
+builder.Services.AddScoped<DeviceMonitoringService>();
+builder.Services.AddHostedService<DeviceMonitoringBackgroundService>();
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
