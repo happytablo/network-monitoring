@@ -1,17 +1,21 @@
 ﻿using System.Net.NetworkInformation;
+using a_webapi.Configuration;
 using a_webapi.Data;
 using a_webapi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace a_webapi.Services;
 
 public class DeviceMonitoringService
 {
     private readonly AppDbContext _dbContext;
+    private readonly MonitoringOptions _options;
 
-    public DeviceMonitoringService(AppDbContext dbContext)
+    public DeviceMonitoringService(AppDbContext dbContext, IOptions<MonitoringOptions> options)
     {
         _dbContext = dbContext;
+        _options = options.Value;
     }
 
     public async Task CheckDevicesAsync(CancellationToken cancellationToken)
@@ -36,7 +40,7 @@ public class DeviceMonitoringService
         Console.WriteLine($"Monitoring cycle completed at {DateTime.UtcNow}");
     }
 
-    private static async Task<DeviceStatusHistory> CheckDeviceAsync(Device device, CancellationToken cancellationToken)
+    private async Task<DeviceStatusHistory> CheckDeviceAsync(Device device, CancellationToken cancellationToken)
     {
         var checkedAt = DateTime.UtcNow;
 
@@ -46,7 +50,7 @@ public class DeviceMonitoringService
         {
             var reply = await ping.SendPingAsync(
                 device.IpAddress,
-                3000);
+                _options.PingTimeoutMilliseconds);
 
             var isOnline = reply.Status == IPStatus.Success;
 

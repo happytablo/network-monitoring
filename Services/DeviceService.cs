@@ -1,5 +1,6 @@
 ﻿using a_webapi.Data;
 using a_webapi.Dto;
+using a_webapi.Dto.Pagination;
 using a_webapi.Interfaces;
 using a_webapi.Models;
 using Mapster;
@@ -9,6 +10,61 @@ namespace a_webapi.Services;
 
 public class DeviceService(AppDbContext dbContext) : IDeviceService
 {
+    public async Task<PagedResultDto<DeviceDto>> GetAllAsync(DeviceQueryDto request)
+    {
+        var query = dbContext.Devices
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            string searchPattern = $"%{request.Search}%";
+            query = query.Where(d => EF.Functions.ILike(d.Name, $"%{searchPattern}%"));
+        }
+
+        if (request.IsOnline.HasValue)
+        {
+            query = query.Where(d => d.IsOnline == request.IsOnline.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            query = query.Where(d => d.Name.Contains(request.Name));
+        }
+
+        query = request.SortBy.ToLower() switch
+        {
+            "name" => request.SortDirection.ToLower() == "desc"
+                ? query.OrderByDescending(d => d.Name)
+                : query.OrderBy(d => d.Name),
+
+            "isonline" => request.SortDirection.ToLower() == "desc"
+                ? query.OrderByDescending(d => d.IsOnline)
+                : query.OrderBy(d => d.IsOnline),
+
+            _ => request.SortDirection.ToLower() == "desc"
+                ? query.OrderByDescending(d => d.Id)
+                : query.OrderBy(d => d.Id)
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var devices = await query
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ProjectToType<DeviceDto>()
+            .ToListAsync();
+
+        return new PagedResultDto<DeviceDto>
+        {
+            Items = devices,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+        };
+    }
+
     public async Task<IReadOnlyList<DeviceDto>> GetAllAsync()
     {
         return await dbContext.Devices

@@ -1,4 +1,5 @@
 using a_webapi.BackgroundServices;
+using a_webapi.Configuration;
 using a_webapi.Data;
 using a_webapi.Services;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,12 @@ builder.Services.AddScoped<DeviceService>();
 builder.Services.AddScoped<DeviceMonitoringService>();
 builder.Services.AddHostedService<DeviceMonitoringBackgroundService>();
 
+builder.Services.Configure<MonitoringOptions>(builder.Configuration.GetSection("Monitoring"));
+
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
+builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
