@@ -1,4 +1,4 @@
-﻿using a_webapi.Dto;
+﻿using a_webapi.DTOs.Device;
 using a_webapi.Models;
 
 namespace a_webapi.Interfaces;

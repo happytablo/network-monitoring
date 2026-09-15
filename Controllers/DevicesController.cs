@@ -1,6 +1,7 @@
-﻿using a_webapi.Dto;
-using a_webapi.Dto.Pagination;
+﻿using a_webapi.DTOs.Device;
+using a_webapi.DTOs.Pagination;
 using a_webapi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi;
 
@@ -8,31 +9,25 @@ namespace a_webapi.Controllers;
 
 [ApiController]
 [Route("api/devices")]
+[Authorize]
 public class DevicesController(DeviceService deviceService) : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var devices = await deviceService.GetAllAsync();
-        return Ok(devices);
-    }
-
     [HttpGet]
     public async Task<ActionResult<PagedResultDto<DeviceDto>>> GetAll(
         [FromQuery] DeviceQueryDto query)
     {
-        if(query.Page <1)
+        if (query.Page < 1)
             return Problem(
                 statusCode: StatusCodes.Status400BadRequest,
                 title: "Invalid pagination parameters",
                 detail: "Page must be greater than or equal to 1.");
-        
-        if(query.PageSize < 1 || query.PageSize > 100)
+
+        if (query.PageSize < 1 || query.PageSize > 100)
             return Problem(
                 statusCode: StatusCodes.Status400BadRequest,
                 title: "Invalid pagination parameters",
                 detail: "PageSize must be between 1 and 100.");
-        
+
         var devices = await deviceService.GetAllAsync(query);
         return Ok(devices);
     }

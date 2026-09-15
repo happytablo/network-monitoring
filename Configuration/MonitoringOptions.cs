@@ -2,6 +2,6 @@
 
 public class MonitoringOptions
 {
-    public int IntervalSeconds { get; set; }
-    public int PingTimeoutMilliseconds { get; set; }
+    public int IntervalSeconds { get; init; }
+    public int PingTimeoutMilliseconds { get; init; }
 }

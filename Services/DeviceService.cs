@@ -1,6 +1,6 @@
 ﻿using a_webapi.Data;
-using a_webapi.Dto;
-using a_webapi.Dto.Pagination;
+using a_webapi.DTOs.Device;
+using a_webapi.DTOs.Pagination;
 using a_webapi.Interfaces;
 using a_webapi.Models;
 using Mapster;
